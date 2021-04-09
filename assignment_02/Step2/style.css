@@ -1,0 +1,4 @@
+.axis line, .axis path {
+    stroke: black;
+    fill: none;
+}

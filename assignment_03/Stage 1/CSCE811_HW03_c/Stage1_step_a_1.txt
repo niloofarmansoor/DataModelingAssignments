@@ -1,0 +1,44 @@
+1: Sender name: Cuc Gerstenberger	State: Nebraska
+2: Sender name: Victorina Mccally	State: Nebraska
+3: Sender name: Keva Lavigna	State: Nebraska
+4: Sender name: Jimmy Plakke	State: Nebraska
+5: Sender name: Marquita Chatriand	State: Nebraska
+6: Sender name: Charity Vondran	State: Nebraska
+7: Sender name: Suanne Flies	State: Nebraska
+8: Sender name: Tyra Bakemeier	State: Nebraska
+9: Sender name: Abbey Wenke	State: Nebraska
+10: Sender name: Elton Booras	State: Nebraska
+11: Sender name: Lenny Sorman	State: Nebraska
+12: Sender name: Roxanna Tomer	State: Nebraska
+13: Sender name: Dean Malory	State: Nebraska
+14: Sender name: Andres Otex	State: Nebraska
+15: Sender name: Basilia Lorincz	State: Nebraska
+16: Sender name: Melissia Gregston	State: Nebraska
+17: Sender name: Suzanna Schenk	State: Nebraska
+18: Sender name: Goldie Kowal	State: Nebraska
+19: Sender name: Regine Jersey	State: Nebraska
+20: Sender name: Terrence Gail	State: Nebraska
+21: Sender name: Jen Boruvka	State: Nebraska
+22: Sender name: Carlie Veltkamp	State: Nebraska
+23: Sender name: Efren Laswell	State: Nebraska
+24: Sender name: Chu Chumbley	State: Nebraska
+25: Sender name: Maxie Unser	State: Nebraska
+26: Sender name: Aleshia Skarphol	State: Nebraska
+27: Sender name: Jeanelle Manriquez	State: Nebraska
+28: Sender name: Daron Graf	State: Nebraska
+29: Sender name: Genna Buchberger	State: Nebraska
+30: Sender name: Gilberte Koslow	State: Nebraska
+31: Sender name: Saundra Hudley	State: Nebraska
+32: Sender name: Kirby Diffee	State: Nebraska
+33: Sender name: Meagan Valrie	State: Nebraska
+34: Sender name: Dione Riblet	State: Nebraska
+35: Sender name: Eleanore Behr	State: Nebraska
+36: Sender name: Luanne Nasr	State: Nebraska
+37: Sender name: Lizette Tucke	State: Nebraska
+
+Total number of user records that meet the requirement: 37
+
+Process time 0.512641 seconds
+
+Process time without printing 0.355279 seconds
+

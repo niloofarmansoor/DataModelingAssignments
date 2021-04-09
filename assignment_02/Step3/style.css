@@ -1,0 +1,12 @@
+.bar {
+    float: left;
+    background-color: steelblue;
+}
+
+p {
+    font-size: 10 px;
+}
+
+p i{
+    color: lightseagreen;
+}

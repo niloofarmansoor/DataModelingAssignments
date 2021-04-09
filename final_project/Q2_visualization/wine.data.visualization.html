@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wine visualization</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="src/css/bootstrap.v4.min.css" type="text/css" crossorigin="anonymous">
+
+    <script src="src/js/d3.v4.min.js" type="text/javascript" crossorigin="anonymous"></script>
+    <script src="src/js/topojson.v2.min.js" type="text/javascript" crossorigin="anonymous"></script>
+
+    <style>
+        #map-container{
+            margin-top: 10px;
+        }
+
+        .title{
+            fill: #000000;
+            font-family: sans-serif;
+            font-size: 20px;
+            text-anchor: middle;
+        }
+
+        .country-borders {
+            fill: none;
+            stroke: #ffff0d;
+            stroke-width: 2px;
+            stroke-linejoin: round;
+            stroke-linecap: round;
+            pointer-events: none;
+        }
+
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            width: 110px;
+            height: 110px;
+            padding: 2px;
+            font: 12px sans-serif;
+            background: #dadada;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .axis--x path {
+            display: none;
+        }
+
+
+    </style>
+
+</head>
+<body>
+    <!--<div class="donut-chart-tooltip", id="donut-chart", style="opacity: 1;"></div>-->
+    <div class="container-fluid" >
+        <div class="row">
+            <div class="col-md-8" id="map-container"></div>
+            <div class="col-md-4" >
+                <div class="row" id="bar-chart-Excellent"></div>
+                <div class="row" id="bar-chart-Verygood"></div>
+                <div class="row" id="bar-chart-Good"></div>
+                <div class="row" id="bar-chart-Fair"></div>
+                <div class="row" id="bar-chart-Poor"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        var width = document.getElementById('map-container').clientWidth;
+
+        var projection = d3.geoMercator()
+            .scale(150)
+            .rotate([-0.25, 0.25, 0]) // [x,y,z]
+            .center([-21.4, 26.6]);
+
+        var path = d3.geoPath().projection(projection);
+
+        var map = d3.select("#map-container")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", 850)
+            .style('padding-top', '50px');
+
+        let text_y = document.getElementById('map-container').clientHeight;
+
+        // Append text to SVG map
+        map.append('text')
+            .attr('class', 'title')
+            .attr('x', 150)
+            .attr('y', text_y/2 -50)
+            .text("World wine quality visualization");
+
+        // Define the div for the tooltip
+        var div = d3.select("body")
+            .append("div")
+            .attr("class", "tooltip")
+            .attr("id", "donut-chart")
+            .style("opacity", 0);
+
+        d3.json("./data_processing/outputFile.geojson", function (error, world) {
+            if (error) throw error;
+
+            // All records in wine data
+            let allRecords = 150929;
+
+            // Data preparation for creating different wines classes and bar charts
+            let excellentWine = [], totalExcellentWine = 0,
+                 veryGoodWine = [], totalVeryGoodWine  = 0,
+                     goodWine = [], totalGoodWine = 0,
+                     fairWine = [], totalFairWine = 0,
+                     poorWine = [], totalPoorWine = 0;
+
+            // for (let f in world.features) {
+            //
+            //     totalExcellentWine += world.features[f].properties.excellent_wine;
+            //     totalVeryGoodWine += world.features[f].properties.veryGood_wine;
+            //     totalGoodWine += world.features[f].properties.good_wine;
+            //     totalFairWine += world.features[f].properties.fair_wine;
+            //     totalPoorWine += world.features[f].properties.poor_wine;
+            // }
+
+
+            for (let w in world.features) {
+                let total_wines = world.features[w].properties.num_of_wines;
+                console.log(total_wines);
+
+                let country_name = world.features[w].properties.name;
+                if (total_wines !== 0) {
+                    let EP = (world.features[w].properties.excellent_wine / total_wines);
+                    let VP = (world.features[w].properties.veryGood_wine / total_wines);
+                    let GP = (world.features[w].properties.good_wine / total_wines);
+                    let FP = (world.features[w].properties.fair_wine / total_wines);
+                    let PP = (world.features[w].properties.poor_wine / total_wines);
+
+                    if (world.features[w].properties.excellent_wine !== 0 && EP !== 0)
+                        excellentWine.push({
+                            country: country_name,
+                            percentage: EP
+                        });
+                    if (world.features[w].properties.veryGood_wine !== 0 && VP !== 0)
+                        veryGoodWine.push({
+                            country: country_name,
+                            percentage: VP
+                        });
+                    if (world.features[w].properties.good_wine !== 0 && GP !== 0)
+                        goodWine.push({
+                            country: country_name,
+                            percentage: GP
+                        });
+                    if (world.features[w].properties.fair_wine !== 0 && FP !== 0)
+                        fairWine.push({
+                            country: country_name,
+                            percentage: FP
+                        });
+                    if (world.features[w].properties.poor_wine !== 0 && PP !== 0)
+                        poorWine.push({
+                            country: country_name,
+                            percentage: PP
+                        });
+                }
+            }
+            loadDataAndDrawBarChart(excellentWine, 'bar-chart-Excellent');
+            loadDataAndDrawBarChart(veryGoodWine, 'bar-chart-Verygood');
+            loadDataAndDrawBarChart(goodWine, 'bar-chart-Good');
+            loadDataAndDrawBarChart(fairWine, 'bar-chart-Fair');
+            loadDataAndDrawBarChart(poorWine, 'bar-chart-Poor');
+
+
+            map.append("g")
+                .attr("class", "countries")
+                .selectAll("path")
+                .data(world.features)
+                .enter().append("path")
+                .attr('id', (d) => { return d.id;})
+                .attr("fill",(d) => {
+                    var percentage = (d.properties.num_of_wines/allRecords) * 100;
+                    percentage = Math.round(percentage * 1000) / 1000;
+                    return getColor(percentage);
+                })
+                .attr("stroke", "#616161")
+                .attr("fill-opacity", 0.5)
+                .attr("d", path);
+
+
+            map.selectAll('.countries path')
+                .on("mouseover", (d) => {
+                    drawDonutChart(d.properties);
+
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    // div.html(`${d.properties.name} <br/> ${d.properties.num_of_wines} <br/> ${d.properties.num_of_wines}`)
+                    div.append('text').style('color', '#351100').text(d.properties.name);
+
+                        div.style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function(d){
+
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
+        });
+
+        function getColor(percentage) {
+
+            if( percentage === 0){
+                return "#a7a7a7"
+            }
+            if( 0 < percentage && percentage <= 1.5){
+                return "#feff90"
+            }
+            if( 1.5 < percentage && percentage <= 5){
+                return "#ffca04"
+            }
+            if( 5 < percentage && percentage <= 15){
+                return "#ff8a04"
+            }
+            if( 15 < percentage && percentage <= 30){
+                return "#ff2b00"
+            }
+            if( 30 < percentage && percentage <= 50){
+                return "#950008"
+            }
+
+        }
+
+
+
+        // Adding the legend here
+        var legendValues = ["Lowest Production", "Low", "Medium", "High","Highest Production"];
+        var legendColor  = ["#feff90", "#ffca04","#ff8a04","#ff2b00","#950008"];
+
+        var legendG = map.selectAll(".legend") // note appending it to mySvg and not svg to make positioning easier
+            .data(legendValues)
+            .enter().append("g")
+            .attr("transform", function(d,i){
+                return "translate(" + 50 + "," + (i * 15 + text_y/2) + ")"; // place each legend on the right and bump each one down 15 pixels
+            })
+            .attr("class", "legend");
+
+        legendG.append("rect") // make a matching color rect
+            .attr("width", 10)
+            .attr("height", 10)
+            .attr("fill", function(d, i) {
+                return legendColor[i];
+            });
+
+        legendG.append("text") // add the text
+            .text(function(d){
+                return d;
+            })
+            .style("font-size", '10px')
+            .attr("y", 10)
+            .attr("x", 12);
+
+
+
+        // Donut Chart
+        // Source: https://stackoverflow.com/questions/32298837/how-to-add-a-nice-legend-to-a-d3-pie-chart
+        var color = d3.scaleOrdinal(d3.schemeCategory10);
+        function drawDonutChart(data) {
+
+            $('.tooltip *').remove();
+
+            let dataset = [
+                { name: 'Excellent', percent: Math.round((data.excellent_wine/data.num_of_wines) * 10000) / 100  },
+                { name: 'Very good', percent: Math.round((data.veryGood_wine/data.num_of_wines) * 10000) / 100 },
+                { name: 'Good', percent: Math.round((data.good_wine/data.num_of_wines) * 10000) / 100 },
+                { name: 'Fair', percent: Math.round((data.fair_wine/data.num_of_wines) * 10000) / 100 },
+                { name: 'Poor', percent: Math.round((data.poor_wine/data.num_of_wines) * 10000) / 100 }
+            ];
+
+
+            let donut_width = document.getElementById('donut-chart').clientWidth-5;
+            let donut_height = document.getElementById('donut-chart').clientHeight-5;
+
+            var outerRadius = donut_width/2;
+            var innerRadius = 30;
+
+            var arc = d3.arc()
+                .outerRadius(outerRadius)
+                .innerRadius(innerRadius);
+
+            var donut = d3.select("#donut-chart")
+                .append("svg")
+                .attr('width', donut_width)
+                .attr('height', donut_height)
+                .attr('class', 'shadow')
+                .append('g')
+                .attr('transform', 'translate('+ donut_width/2 +','+ donut_height/2 +')');
+
+            var pie = d3.pie()
+                .value(function(d){ return d.percent })
+                .sort(null)
+                .padAngle(.03);
+
+            var Dpath = donut.selectAll('path')
+                .data(pie(dataset))
+                .enter()
+                .append('path')
+                .attr('d', arc)
+                .attr('fill', function(d,i){
+                        return color(d.data.name);
+                    });
+
+            Dpath.transition()
+                .duration(1000)
+                .attrTween('d', function(d) {
+                    var interpolate = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
+                    return function(t) {
+                        return arc(interpolate(t));
+                    };
+                });
+
+
+            var restOfTheData = function(){
+                var text = donut.selectAll('text')
+                    .data(pie(dataset))
+                    .enter()
+                    .append("text")
+                    .transition()
+                    .duration(200)
+                    .attr("transform", function (d) {
+                        return "translate(" + arc.centroid(d) + ")";
+                    })
+                    .attr("dy", ".4em")
+                    .attr("text-anchor", "middle")
+                    .text(function(d){
+                        return d.data.percent+"%";
+                    })
+                    .style('fill', '#ffffff')
+                    .style('font-size', '7px');
+
+                var legendRectSize = 5;
+                var legendSpacing = 3;
+                var legendHeight = legendRectSize + legendSpacing;
+
+
+                var legend = donut.selectAll('.legend')
+                    .data(color.domain())
+                    .enter()
+                    .append('g')
+                    .attr('class','legend')
+                    .attr('transform', function(d,i){
+                            //Just a calculation for x & y position
+                            return 'translate(-10,' + ((i * legendHeight) - 18) + ')';
+                        });
+
+                legend.append('rect')
+                    .attr('width', legendRectSize)
+                    .attr('height',legendRectSize)
+                    .attr('rx', 20)
+                    .attr('ry', 20)
+                    .style('fill', color)
+                    .style('stroke', color);
+
+                legend.append('text')
+                    .attr('x', 7)
+                    .attr('y', 4)
+                    .text(function(d){
+                        return d;
+                    })
+                    .style('fill', '#000000')
+                    .style('font-size', '6px');
+            };
+
+            setTimeout(restOfTheData,1000);
+        }
+
+
+
+        //  Draw bar charts ===================================================================
+        var g, margin = { top: 30, right: 20, bottom: 30, left: 40 },
+            x = d3.scaleBand().padding(0.1),
+            y = d3.scaleLinear(),
+            theData = undefined;
+
+        function createBarChartObject(id) {
+
+            let headerText = id.split('-');
+            headerText = headerText[headerText.length-1];
+
+            let barChartWidth = document.getElementById(id).clientWidth;
+            let barChartHeight = document.getElementById('map-container').clientHeight;
+
+            let barChart = d3.select(`#${id}`).append('svg').attr('width', barChartWidth-20).attr('height', barChartHeight/4.5);
+
+            g = barChart.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            g.append("g").attr("class", "axis axis--x");
+
+            g.append("g").attr("class", "axis axis--y");
+
+            g.append("text")
+                .attr("transform", "rotate(0)")
+                .attr("x", () => {
+                    let len = 65;
+                    if(headerText === "Fair") len = 25;
+                    if(headerText === "Verygood") len = 70;
+                    if(headerText === "Poor" || headerText === "Good") len = 36;
+                    return len;
+                })
+                .attr("y", -18)
+                .attr("dy", "0.71em")
+                .attr("text-anchor", "end")
+                .text(()=>{
+                    if(headerText === 'Verygood') headerText = 'Very good';
+                    return `${headerText}`;
+                });
+
+            return barChart;
+        }
+
+        // LOADING DATA AND DRAWING
+        function loadDataAndDrawBarChart(data, id) {
+
+            d3.json(data,(error) => {
+                if (error) throw error;
+
+                theData = data;
+
+                // console.log(theData);
+
+                x.domain(theData.map(function (d) { return d.country; }));
+                y.domain([0, d3.max(theData, function (d) { return d.percentage; })]);
+
+                let BChart = createBarChartObject(id);
+                drawBarChart(BChart, id);
+            });
+        }
+
+        // START!
+        function drawBarChart(barChart, id) {
+
+            let wineClass = id.split('-');
+            wineClass = wineClass[wineClass.length-1];
+
+            var bounds = barChart.node().getBoundingClientRect(),
+                width = bounds.width - margin.left - margin.right,
+                height = bounds.height - margin.top - margin.bottom;
+
+            x.rangeRound([0, width]);
+            y.rangeRound([height, 0]);
+
+            g.select(".axis--x")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x).tickSize(0).tickPadding(10))
+                .selectAll("text")
+                .style("text-anchor", "end")
+                .style("font-size", "6px")
+                .attr("dx", "-.2em")
+                .attr("dy", "-.4em").attr("fill", "#535353")
+                .attr("transform", "rotate(-30)");
+
+            g.select(".axis--y")
+                .call(d3.axisLeft(y).ticks(7, "%"));
+
+            var bars = g.selectAll(".bar")
+                .data(theData);
+
+            // ENTER
+            bars.enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", function (d) { return x(d.country); })
+                .attr("y", function (d) { return y(d.percentage); })
+                .attr("width", x.bandwidth())
+                .attr("height", function (d) { return height - y(d.percentage); })
+                .style("fill", getBarColor(wineClass));
+
+            // UPDATE
+            bars.attr("x", function (d) { return x(d.country); })
+                .attr("y", function (d) { return y(d.percentage); })
+                .attr("width", x.bandwidth())
+                .attr("height", function (d) { return height - y(d.percentage); });
+
+            // EXIT
+            bars.exit().remove();
+
+        }
+
+        function getBarColor(wineClass){
+            let color = '#939393';
+            if(wineClass === 'Excellent') color = '#1f77b4';
+            if(wineClass === 'Verygood') color = '#FF7F0E';
+            if(wineClass === 'Good') color = '#2CA02C';
+            if(wineClass === 'Fair') color = '#d62728';
+            if(wineClass === 'Poor') color = '#9467bd';
+
+            return color;
+        }
+
+        // window.addEventListener("resize", drawBarChart);
+
+
+    </script>
+    <script src="src/js/jquery-3.2.1.slim.min.js"  type="text/javascript" crossorigin="anonymous"></script>
+    <script src="src/js/popper.min.js" type="text/javascript" crossorigin="anonymous"></script>
+    <script src="src/js/bootstrap.v4.min.js" type="text/javascript" crossorigin="anonymous"></script>
+</body>
+
+</html>

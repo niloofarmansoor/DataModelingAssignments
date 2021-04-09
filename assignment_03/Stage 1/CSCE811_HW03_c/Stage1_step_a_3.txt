@@ -1,0 +1,33 @@
+1: Location: Nebraska, Sender Name: Cuc Gerstenberger, 	time: 8:41
+2: Location: Nebraska, Sender Name: Victorina Mccally, 	time: 8:55
+3: Location: Nebraska, Sender Name: Keva Lavigna, 	time: 8:21
+4: Location: Nebraska, Sender Name: Jimmy Plakke, 	time: 8:23
+5: Location: Nebraska, Sender Name: Charity Vondran, 	time: 8:8
+6: Location: Nebraska, Sender Name: Tyra Bakemeier, 	time: 8:57
+7: Location: Nebraska, Sender Name: Elton Booras, 	time: 8:17
+8: Location: Nebraska, Sender Name: Lenny Sorman, 	time: 8:39
+9: Location: Nebraska, Sender Name: Dean Malory, 	time: 8:16
+10: Location: Nebraska, Sender Name: Basilia Lorincz, 	time: 8:34
+11: Location: Nebraska, Sender Name: Melissia Gregston, 	time: 8:53
+12: Location: Nebraska, Sender Name: Suzanna Schenk, 	time: 8:48
+13: Location: Nebraska, Sender Name: Goldie Kowal, 	time: 8:17
+14: Location: Nebraska, Sender Name: Regine Jersey, 	time: 8:20
+15: Location: Nebraska, Sender Name: Terrence Gail, 	time: 8:5
+16: Location: Nebraska, Sender Name: Jen Boruvka, 	time: 8:26
+17: Location: Nebraska, Sender Name: Chu Chumbley, 	time: 8:58
+18: Location: Nebraska, Sender Name: Maxie Unser, 	time: 8:6
+19: Location: Nebraska, Sender Name: Aleshia Skarphol, 	time: 8:52
+20: Location: Nebraska, Sender Name: Jeanelle Manriquez, 	time: 8:41
+21: Location: Nebraska, Sender Name: Daron Graf, 	time: 8:52
+22: Location: Nebraska, Sender Name: Genna Buchberger, 	time: 8:34
+23: Location: Nebraska, Sender Name: Saundra Hudley, 	time: 8:3
+24: Location: Nebraska, Sender Name: Kirby Diffee, 	time: 8:54
+25: Location: Nebraska, Sender Name: Meagan Valrie, 	time: 8:27
+26: Location: Nebraska, Sender Name: Dione Riblet, 	time: 8:4
+27: Location: Nebraska, Sender Name: Luanne Nasr, 	time: 8:42
+28: Location: Nebraska, Sender Name: Lizette Tucke, 	time: 8:33
+
+Number of records: 28
+Process time 0.366600 seconds
+Process time without printing: 0.329150 seconds
+

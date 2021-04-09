@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="d3.layout.cloud.js"></script>
+<head>
+    <title>Word Cloud Example</title>
+</head>
+<style>
+    body {
+        font-family:"Lucida Grande","Droid Sans",Arial,Helvetica,sans-serif;
+    }
+
+    .bld {
+        font-weight: bold;
+    }
+</style>
+<body>
+
+</body>
+<script>
+    
+    function createWordCloud(wineries) {
+            var color = d3.scale.linear()
+                .domain([0,1,2,3,4,5,6,10,15,20,100])
+                .range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", "#777", "#666", "#555", "#444", "#333", "#222"]);
+
+        d3.layout.cloud().size([1500, 1200])
+                .words(wineries)
+                .rotate(0)
+                .fontSize(function(d) { return d.size; })
+                .on("end", draw)
+                .start();
+
+        function draw(words) {
+            d3.select("body").append("svg")
+                    .attr("width", 1550)
+                    .attr("height", 1250)
+                    .attr("class", "wordcloud")
+                    .append("g")
+                    // without the transform, words words would get cutoff to the left and top, they would
+                    // appear outside of the SVG area
+                    .attr("transform", "translate(320,200)")
+                    .selectAll("text")
+                    .data(words)
+                    .enter().append("text")
+                    .style("font-size", function(d) { return d.size + "px"; })
+                    .style("fill", function(d, i) { return color(i); })
+                    .attr("transform", function(d) {
+                        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                    })
+                    .text(function(d) { return d.text; });
+        }
+    }
+    var excellentWine = new Set();
+    var poorWine = new Set();
+    d3.csv("./data/wine-data.csv", function (error, data){
+
+        if (error) throw error;
+        
+        // interate through all of the wines and only keep a single copy of each
+        // name in either the excellent or poor wineries. Otherwise, do no use wine.
+        for (var i = 0; i < data.length; i++) {
+
+            // if the points is 98 or greater, then it is an excellent wine
+            if (data[i].points >= 98) {
+                var modified_winery = data[i].winery;
+                modified_winery = modified_winery.replace(/ /g,"_");
+                excellentWine.add(modified_winery);
+
+               
+            }
+            // if the points is 81 or less, then it is a poor wine
+            else if (data[i].points < 82) {
+                var modified_winery = data[i].winery;
+                modified_winery = modified_winery.replace(/ /g,"_");
+                poorWine.add(modified_winery);
+        }
+    }
+    //excellentWineries = [];
+    poorWineries = [];
+    //allWineries = [];
+
+    /*for (var it = excellentWine.values(), val= null; val=it.next().value; ) {
+        excellentWineries.push({
+            text: val,
+            size: 20
+        });
+    }*/
+
+    // take all the values in the set of poor wineries and create a list of key-value pairs.
+    for (var it = poorWine.values(), val= null; val=it.next().value; ) {
+        poorWineries.push({
+            text: val,
+            size: 20
+        });
+    }
+    /*for (var i = excellentWine.values(), excel= null; excel=i.next().value; ) {
+        for (var j = poorWine.values(), poor= null; poor=j.next().value; ) {
+            if (poor === excel){
+                allWineries.push({
+                text: poor,
+                size: 50
+            });
+            } else {
+                allWineries.push({
+                text: poor,
+                size: 10
+                });
+            }
+        }
+    }*/
+
+    //createWordCloud(excellentWineries);
+    createWordCloud(poorWineries);
+    //createWordCloud(allWineries);
+    });
+    //createWordCloud(frequency_list);
+    //console.log(frequency_list);
+    //console.log(excellentWine);
+        
+    
+</script>
+
+
+
+
+</html>
